@@ -1,0 +1,160 @@
+import { useState } from "react";
+import { useTask } from "../Context/TaskContext";
+import { FaRegCalendarAlt, FaUser } from "react-icons/fa";
+
+const AllTask = () => {
+  const { tasks, deleteTask, changeTaskStatus } = useTask();
+
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterDueDate, setFilterDueDate] = useState("");
+  const [filterPriority, setFilterPriority] = useState("all");
+
+  const handleStatusChange = (taskId, currentStatus) => {
+    let newStatus;
+    if (currentStatus === "pending") {
+      newStatus = "in progress";
+    } else if (currentStatus === "in progress") {
+      newStatus = "complete";
+    } else {
+      newStatus = currentStatus;
+    }
+
+    changeTaskStatus(taskId, newStatus);
+  };
+
+  // Filter tasks based on status, due date, and priority
+  const filteredTasks = tasks.filter((task) => {
+    if (filterStatus === "all" || task.status === filterStatus) {
+      if (filterDueDate === "") {
+        return true;
+      } else {
+        const taskDueDate = new Date(task.dueDate);
+        const filterDueDateObj = new Date(filterDueDate);
+
+        if (
+          taskDueDate.getFullYear() === filterDueDateObj.getFullYear() &&
+          taskDueDate.getMonth() === filterDueDateObj.getMonth() &&
+          taskDueDate.getDate() === filterDueDateObj.getDate()
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+
+  // Filter by priority
+  const priorityFilteredTasks = filteredTasks.filter((task) => {
+    if (filterPriority === "all" || task.priority === filterPriority) {
+      return true;
+    }
+    return false;
+  });
+
+  return (
+    <div className="shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-5 rounded-md my-5">
+      <h2 className="text-xl font-bold pb-3"> Task List</h2>
+
+      {/* Filter options */}
+      <div className="md:flex justify-between ">
+        <div className="mb-4">
+          <label className="text-sm font-medium">Filter by Status:</label>
+          <select
+            className="ml-2 p-2 border rounded-md"
+            onChange={(e) => setFilterStatus(e.target.value)}
+            value={filterStatus}
+          >
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="in progress">In Progress</option>
+            <option value="complete">Complete</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className="text-sm font-medium">Filter by Due Date:</label>
+          <input
+            type="date"
+            className="ml-2 p-2 border rounded-md"
+            onChange={(e) => setFilterDueDate(e.target.value)}
+            value={filterDueDate}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="text-sm font-medium">Filter by Priority:</label>
+          <select
+            className="ml-2 p-2 border rounded-md"
+            onChange={(e) => setFilterPriority(e.target.value)}
+            value={filterPriority}
+          >
+            <option value="all">All</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-5">
+        {priorityFilteredTasks.map((task, index) => (
+          <div
+            key={index}
+            className=" relative p-2 rounded shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+          >
+            <h3 className="font-bold">{task.title}</h3>
+            <hr />
+            <p className="py-2">Description: {task.description}</p>
+            <div className="flex justify-between items-center">
+              <p className="flex items-center gap-1">
+                <FaRegCalendarAlt />
+                {task.dueDate}
+              </p>
+
+              <p className="flex items-center gap-1">
+                <FaUser />
+                {task.assignedTo}
+              </p>
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <p>Priority: {task.priority}</p>
+              <button
+                className={
+                  task.status === "pending"
+                    ? "bg-black text-white"
+                    : task.status === "in progress"
+                    ? "bg-yellow-500"
+                    : "bg-green-500 text-white"
+                }
+                style={{ padding: "2px 10px", borderRadius: "5px" }}
+                onClick={() => handleStatusChange(task.id, task.status)}
+                disabled={task.status === "complete"}
+                title={
+                  task.status !== "complete"
+                    ? `Change Status to ${
+                        task.status === "pending"
+                          ? "In Progress"
+                          : task.status === "in progress"
+                          ? "Complete"
+                          : "Pending"
+                      }`
+                    : null
+                }
+              >
+                {task.status}
+              </button>
+            </div>
+            <div
+              onClick={() => deleteTask(task.id)}
+              className="border-2 border-black text-black  rounded-full h-6 w-6 flex justify-center items-center hover:bg-red-600 hover:text-white hover:border-red-600 absolute top-1 right-2"
+            >
+              <button>X</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default AllTask;
