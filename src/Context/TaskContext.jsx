@@ -40,8 +40,6 @@ export function TaskProvider({ children }) {
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
 
-
-
   const [teamTask, setTeamTask] = useState([]);
 
   useEffect(() => {
@@ -52,7 +50,10 @@ export function TaskProvider({ children }) {
   const addTeamTask = (newTeamTask) => {
     setTeamTask([...teamTask, newTeamTask]);
 
-    localStorage.setItem("teamTask", JSON.stringify([...teamTask, newTeamTask]));
+    localStorage.setItem(
+      "teamTask",
+      JSON.stringify([...teamTask, newTeamTask])
+    );
   };
 
   const updateTeamTask = (taskId, updatedTask) => {
@@ -77,9 +78,6 @@ export function TaskProvider({ children }) {
 
     localStorage.setItem("teamTask", JSON.stringify(updatedTasks));
   };
-
-
-
 
   const contextValue = {
     tasks,

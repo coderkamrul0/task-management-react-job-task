@@ -96,7 +96,7 @@ const TeamTask = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-5">
+      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-5">
         {priorityFilteredTasks.map((task, index) => (
           <div
             key={index}
